@@ -1,0 +1,18 @@
+{
+  "C_Cpp.clang_format_style": "Visual Studio",
+  "editor.formatOnSave": false,
+  "[cpp]": {
+    "editor.quickSuggestions": true
+  },
+  "[c]": {
+    "editor.quickSuggestions": true
+  },
+  "C_Cpp.intelliSenseEngineFallback": "Enabled",
+  "files.associations": {
+    "freertos.h": "c",
+    "lvgl.h": "c",
+    "lvgl_helpers.h": "c"
+  },
+  "cmake.configureOnOpen": true,
+  "idf.portWin": "COM25"
+}

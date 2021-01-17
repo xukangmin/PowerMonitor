@@ -1,0 +1,6 @@
+[submodule "blink/components/lvgl"]
+	path = blink/components/lvgl
+	url = https://github.com/lvgl/lvgl.git
+[submodule "blink/components/lvgl_esp32_drivers"]
+	path = blink/components/lvgl_esp32_drivers
+	url = https://github.com/lvgl/lvgl_esp32_drivers.git
