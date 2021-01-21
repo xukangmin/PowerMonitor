@@ -34,14 +34,14 @@
  *      DEFINES
  *********************/
 #define TAG "demo"
-#define LV_TICK_PERIOD_MS 1
+#define LV_TICK_PERIOD_MS 10
 
 /**********************
  *  STATIC PROTOTYPES
  **********************/
 static void lv_tick_task(void *arg);
 static void guiTask(void *pvParameter);
-static void create_demo_application(void);
+static void lx_ex_chart1(void);
 
 /**********************
  *   APPLICATION MAIN
@@ -128,7 +128,7 @@ static void guiTask(void *pvParameter) {
     ESP_ERROR_CHECK(esp_timer_start_periodic(periodic_timer, LV_TICK_PERIOD_MS * 1000));
 
     /* Create the demo application */
-    create_demo_application();
+    lx_ex_chart1();
     
     while (1) {
         /* Delay 1 tick (assumes FreeRTOS tick is 10ms */
@@ -145,27 +145,50 @@ static void guiTask(void *pvParameter) {
     vTaskDelete(NULL);
 }
 
-static void btn_event_cb(lv_obj_t * btn, lv_event_t event)
-{
-    if(event == LV_EVENT_CLICKED) {
-        static uint8_t cnt = 0;
-        cnt++;
 
-        /*Get the first child of the button which is the label and change its text*/
-        lv_obj_t * label = lv_obj_get_child(btn, NULL);
-        lv_label_set_text_fmt(label, "Button: %d", cnt);
-    }
+#define TIME_STEP   1000
+
+static int currentValue = 0;
+
+static int dir = 0;
+lv_obj_t* chart;
+lv_chart_series_t* ser1;
+
+static void obj_test_task_cb(lv_task_t* param)
+{
+    if (dir == 0) currentValue++;
+    if (dir == 1) currentValue--;
+
+    if (currentValue > 100) dir = 1;
+    if (currentValue < 0) dir = 0;
+
+    lv_chart_set_next(chart, ser1, currentValue);
+
+    //lv_chart_refresh(chart); /*Required after direct set*/
 }
 
-static void create_demo_application(void)
-{
-    lv_obj_t * btn = lv_btn_create(lv_scr_act(), NULL);     /*Add a button the current screen*/
-    lv_obj_set_pos(btn, 10, 10);                            /*Set its position*/
-    lv_obj_set_size(btn, 120, 50);                          /*Set its size*/
-    lv_obj_set_event_cb(btn, btn_event_cb);                 /*Assign a callback to the button*/
+void lx_ex_chart1(void) {
+    /*Create a chart*/
 
-    lv_obj_t * label = lv_label_create(btn, NULL);          /*Add a label to the button*/
-    lv_label_set_text(label, "Button");                     /*Set the labels text*/
+    lv_task_create(obj_test_task_cb, TIME_STEP, LV_TASK_PRIO_MID, NULL);
+
+
+    chart = lv_chart_create(lv_scr_act(), NULL);
+    lv_obj_set_size(chart, 240, 220);
+    lv_obj_align(chart, NULL, LV_ALIGN_CENTER, 0, 0);
+    lv_chart_set_type(chart, LV_CHART_TYPE_LINE);   /*Show lines and points too*/
+    lv_chart_set_point_count(chart, 50);
+    /*Add two data series*/
+    ser1 = lv_chart_add_series(chart, LV_COLOR_GREEN);
+    //lv_chart_series_t* ser2 = lv_chart_add_series(chart, LV_COLOR_GREEN);
+
+    
+
+    /*Set the next points on 'ser1'*/
+    lv_chart_set_next(chart, ser1, 10);
+
+
+    lv_chart_refresh(chart); /*Required after direct set*/
 }
 
 static void lv_tick_task(void *arg) {

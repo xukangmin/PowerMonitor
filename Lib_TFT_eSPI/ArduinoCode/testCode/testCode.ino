@@ -2,7 +2,7 @@
 #include <SPI.h>
 
 #define UPDATE_INTERVAL 20 // ms
-#define MOVE_PIXEL 50
+#define MOVE_PIXEL 2
 #define GRID_START_X 40
 #define GRID_START_Y 10
 
